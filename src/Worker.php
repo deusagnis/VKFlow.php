@@ -18,31 +18,36 @@ class Worker
     protected TaskResultHandlerFabric $taskResultHandlerFabric;
     protected TimeMeter $timeMeter;
 
-    public function __construct(TaskQueue $taskQueue,TaskFabric $taskFabric,TaskResultHandlerFabric $taskResultHandlerFabric)
+    public function __construct(
+        ProfileData $profileData,
+        TaskQueue $taskQueue, TaskFabric $taskFabric, TaskResultHandlerFabric $taskResultHandlerFabric
+    )
     {
         $this->timeMeter = new TimeMeter();
+        $this->profileData = $profileData;
         $this->taskQueue = $taskQueue;
         $this->taskFabric = $taskFabric;
         $this->taskResultHandlerFabric = $taskResultHandlerFabric;
     }
 
-    public function perform(){
+    public function perform()
+    {
         $taskNote = $this->taskQueue->shiftTask();
-        if(empty($taskNote)){
+        if (empty($taskNote)) {
             throw new TasksNotFound();
         }
 
-        $profile = $this->profileData->getByVkId($taskNote->vk_id);
-        if(empty($profile)){
+        $profile = $this->profileData->getById($taskNote->profile_id);
+        if (empty($profile)) {
             throw new ProfileNotFound();
         }
 
-        $task = $this->taskFabric->make($taskNote,$profile);
+        $task = $this->taskFabric->make($taskNote, $profile);
 
         $result = $task->execute();
         $result->elapsedTime = $this->timeMeter->timeBetween();
 
-        $resultHandler = $this->taskResultHandlerFabric->make($taskNote,$profile,$this->taskFabric->getApi(),$result);
+        $resultHandler = $this->taskResultHandlerFabric->make($taskNote, $profile, $this->taskFabric->getApi(), $result);
         $resultHandler->handle();
     }
 }

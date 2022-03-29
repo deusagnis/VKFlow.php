@@ -4,5 +4,5 @@ namespace MGGFLOW\VKFlow\Interfaces;
 
 interface ProfileData
 {
-    public function getByVkId($vkId);
+    public function getById($vkId);
 }
