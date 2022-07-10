@@ -19,6 +19,10 @@ class FillCommittentProfile
         $this->api = $api;
     }
 
+    /**
+     * Fill committent profile object.
+     * @return object
+     */
     public function fill(): object
     {
         $this->setVK();

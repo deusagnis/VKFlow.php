@@ -10,6 +10,9 @@ use MGGFLOW\VKFlow\Interfaces\TaskFabric;
 use MGGFLOW\VKFlow\Interfaces\TaskQueue;
 use MGGFLOW\VKFlow\Interfaces\TaskResultHandlerFabric;
 
+/**
+ * Worker to perform Tasks.
+ */
 class Worker
 {
     protected TaskQueue $taskQueue;
@@ -30,6 +33,12 @@ class Worker
         $this->taskResultHandlerFabric = $taskResultHandlerFabric;
     }
 
+    /**
+     * Perform one task.
+     * @return void
+     * @throws ProfileNotFound
+     * @throws TasksNotFound
+     */
     public function perform()
     {
         $taskNote = $this->taskQueue->shiftTask();
