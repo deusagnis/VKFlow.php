@@ -2,9 +2,9 @@
 
 namespace MGGFLOW\VKFlow;
 
+use MGGFLOW\ExceptionManager\Interfaces\UniException;
+use MGGFLOW\ExceptionManager\ManageException;
 use MGGFLOW\Tools\TimeMeter;
-use MGGFLOW\VKFlow\Exceptions\ProfileNotFound;
-use MGGFLOW\VKFlow\Exceptions\TasksNotFound;
 use MGGFLOW\VKFlow\Interfaces\ProfileData;
 use MGGFLOW\VKFlow\Interfaces\TaskFabric;
 use MGGFLOW\VKFlow\Interfaces\TaskQueue;
@@ -36,19 +36,26 @@ class Worker
     /**
      * Perform one task.
      * @return void
-     * @throws ProfileNotFound
-     * @throws TasksNotFound
+     * @throws UniException
+     * @throws UniException
      */
     public function perform()
     {
         $taskNote = $this->taskQueue->shiftTask();
         if (empty($taskNote)) {
-            throw new TasksNotFound();
+            throw ManageException::build()
+                ->log()->info()->b()
+                ->desc()->not('Task')->found()->b()
+                ->fill();
         }
 
         $profile = $this->profileData->getById($taskNote->profile_id);
         if (empty($profile)) {
-            throw new ProfileNotFound();
+            throw ManageException::build()
+                ->log()->info()->b()
+                ->desc()->not('Profile')->found()
+                ->context($taskNote, 'taskNote')->b()
+                ->fill();
         }
 
         $task = $this->taskFabric->make($taskNote, $profile);

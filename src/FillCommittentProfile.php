@@ -3,6 +3,7 @@
 namespace MGGFLOW\VKFlow;
 
 use MGGFLOW\VK\API;
+use MGGFLOW\VKFlow\Exceptions\VKError;
 use MGGFLOW\VKFlow\VK\GetApiUser;
 
 class FillCommittentProfile
@@ -22,6 +23,7 @@ class FillCommittentProfile
     /**
      * Fill committent profile object.
      * @return object
+     * @throws VKError
      */
     public function fill(): object
     {
@@ -32,6 +34,9 @@ class FillCommittentProfile
         return $this->profile;
     }
 
+    /**
+     * @throws VKError
+     */
     protected function setVK()
     {
         $profileVK = GetApiUser::get($this->api);

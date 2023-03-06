@@ -2,7 +2,8 @@
 
 namespace MGGFLOW\VKFlow\Policies;
 
-use MGGFLOW\VKFlow\Exceptions\AccessDenied;
+use MGGFLOW\ExceptionManager\Interfaces\UniException;
+use MGGFLOW\ExceptionManager\ManageException;
 
 class Ownership
 {
@@ -11,11 +12,17 @@ class Ownership
      * @param object $something
      * @param object $user
      * @return void
-     * @throws AccessDenied
+     * @throws UniException
      */
-    public static function belongsTo(object $something,object $user){
+    public static function belongsTo(object $something, object $user)
+    {
         if ($user->id != $something->owner_id) {
-            throw new AccessDenied();
+            throw ManageException::build()
+                ->log()->info()->b()
+                ->desc()->denied('Access')
+                ->context($something, 'something')
+                ->context($user, 'user')->b()
+                ->fill();
         }
     }
 }
